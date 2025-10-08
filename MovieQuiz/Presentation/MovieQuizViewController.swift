@@ -95,13 +95,20 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate {
         if currentQuestionIndex == questionsAmount - 1 {
             statisticService.store(correct: correctAnswersCount, total: questionsAmount)
             
+            let resultText = """
+            Ваш результат: \(correctAnswersCount)/\(questionsAmount)
+            Количество сыгранных квизов: \(statisticService.gamesCount)
+            Рекорд: \(statisticService.bestGame.correct)/\(statisticService.bestGame.total) (\(statisticService.bestGame.date.dateTimeString))
+            Средняя точность: \(String(format: "%.2f", statisticService.totalAccuracy))%
+            """
+            
             let viewModel = QuizResults(
                 title: "Этот раунд окончен!",
-                text: "Ваш результат: \(correctAnswersCount)/\(questionsAmount)",
+                text: resultText,
                 buttonText: "Сыграть ещё раз"
             )
             
-            showResult(quiz: viewModel)
+            showResult(quiz: viewModel, massage: resultText)
         } else {
             self.imageView.layer.borderWidth = 0
             self.imageView.layer.borderColor = nil
@@ -111,15 +118,8 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate {
         }
     }
     
-    private func showResult(quiz result: QuizResults) {
-        let message = """
-        Ваш результат: \(correctAnswersCount)/\(questionsAmount)
-        Количество сыгранных квизов: \(statisticService.gamesCount)
-        Рекорд: \(statisticService.bestGame.correct)/\(statisticService.bestGame.total) (\(statisticService.bestGame.date.dateTimeString))
-        Средняя точность: \(String(format: "%.2f", statisticService.totalAccuracy))%
-        """
-        
-        let model = AlertModel(title: result.title, message: message, buttonText: result.buttonText) { [weak self] in
+    private func showResult(quiz result: QuizResults, massage resultText: String) {
+        let model = AlertModel(title: result.title, message: resultText, buttonText: result.buttonText) { [weak self] in
             self?.restartGame()
         }
         
