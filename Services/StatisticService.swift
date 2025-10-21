@@ -1,28 +1,29 @@
 import UIKit
 
+// MARK: - StatisticService
 final class StatisticService {
     
+    // MARK: - Private Properties
     private let storage: UserDefaults = .standard
     
+    // MARK: - Keys
     private enum Keys: String {
-        case gamesCount          // Для счётчика сыгранных игр
-        case bestGameCorrect     // Для количества правильных ответов в лучшей игре
-        case bestGameTotal       // Для общего количества вопросов в лучшей игре
-        case bestGameDate        // Для даты лучшей игры
-        case totalCorrectAnswers // Для общего количества правильных ответов за все игры
-        case totalQuestionsAsked // Для общего количества вопросов, заданных за все игры
+        case gamesCount          // Счётчик сыгранных игр
+        case bestGameCorrect     // Количество правильных ответов в лучшей игре
+        case bestGameTotal       // Общее количество вопросов в лучшей игре
+        case bestGameDate        // Дата лучшей игры
+        case totalCorrectAnswers // Общее количество правильных ответов за все игры
+        case totalQuestionsAsked // Общее количество заданных вопросов
     }
 }
 
+// MARK: - StatisticServiceProtocol
 extension StatisticService: StatisticServiceProtocol {
     
+    // MARK: - Public Computed Properties
     var gamesCount: Int {
-        get{
-            storage.integer(forKey: Keys.gamesCount.rawValue)
-        }
-        set{
-            storage.set(newValue, forKey: Keys.gamesCount.rawValue)
-        }
+        get { storage.integer(forKey: Keys.gamesCount.rawValue) }
+        set { storage.set(newValue, forKey: Keys.gamesCount.rawValue) }
     }
     
     var bestGame: GameResult {
@@ -38,25 +39,24 @@ extension StatisticService: StatisticServiceProtocol {
             storage.set(newValue.date, forKey: Keys.bestGameDate.rawValue)
         }
     }
-        
-    private var totalCorrectAnswers: Int {
-        get { storage.integer(forKey: Keys.totalCorrectAnswers.rawValue)
-        }
-        set { storage.set(newValue, forKey: Keys.totalCorrectAnswers.rawValue)
-        }
-    }
-    private var totalQuestionsAsked: Int {
-        get { storage.integer(forKey: Keys.totalQuestionsAsked.rawValue)
-        }
-        set { storage.set(newValue, forKey: Keys.totalQuestionsAsked.rawValue)
-        }
-    }
-        
+    
     var totalAccuracy: Double {
         guard totalQuestionsAsked > 0 else { return 0 }
-        return (Double(totalCorrectAnswers)/Double(totalQuestionsAsked)) * 100
+        return (Double(totalCorrectAnswers) / Double(totalQuestionsAsked)) * 100
     }
     
+    // MARK: - Private Computed Properties
+    private var totalCorrectAnswers: Int {
+        get { storage.integer(forKey: Keys.totalCorrectAnswers.rawValue) }
+        set { storage.set(newValue, forKey: Keys.totalCorrectAnswers.rawValue) }
+    }
+    
+    private var totalQuestionsAsked: Int {
+        get { storage.integer(forKey: Keys.totalQuestionsAsked.rawValue) }
+        set { storage.set(newValue, forKey: Keys.totalQuestionsAsked.rawValue) }
+    }
+    
+    // MARK: - Public Methods
     func store(correct count: Int, total amount: Int) {
         totalCorrectAnswers += count
         totalQuestionsAsked += amount
