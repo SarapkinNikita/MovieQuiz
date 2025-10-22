@@ -12,19 +12,19 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate {
     
     // MARK: - Private Properties
     
-    private var currentQuestionIndex = 0
+
     private var correctAnswersCount = 0
     private var isAnswerBeingProcessed = false
-    private let questionsAmount: Int = 10
     private var questionFactory: QuestionFactoryProtocol?
     private var currentQuestion: QuizQuestion?
     private var alertPresenter = AlertPresenter()
     private var statisticService: StatisticServiceProtocol = StatisticService()
+    private let presenter = MovieQuizPresenter()
     
     // MARK: - View Life Cycle
     override func viewDidLoad() {
         super.viewDidLoad()
-       
+        
        imageView.layer.cornerRadius = 20
         questionFactory = QuestionFactory(moviesLoader: MoviesLoader(), delegate: self)
         statisticService = StatisticService()
@@ -40,7 +40,7 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate {
         }
         
         currentQuestion = question
-        let viewModel = convert(model: question)
+        let viewModel = presenter.convert(model: question)
         DispatchQueue.main.async { [weak self] in
             self?.show(quiz: viewModel)
         }
@@ -63,12 +63,12 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate {
     }
     
     // MARK: - Private Methods
-    private func convert(model: QuizQuestion) -> QuizStep {
-        return QuizStep(
-            image: UIImage(data: model.image) ?? UIImage(),
-            question: model.text,
-            questionNumber: "\(currentQuestionIndex + 1)/\(questionsAmount)")
-    }
+//    private func convert(model: QuizQuestion) -> QuizStep {
+//        return QuizStep(
+//            image: UIImage(data: model.image) ?? UIImage(),
+//            question: model.text,
+//            questionNumber: "\(currentQuestionIndex + 1)/\(questionsAmount)")
+//    }
     
     private func show(quiz step: QuizStep) {
         imageView.image = step.image
@@ -94,7 +94,7 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate {
                                buttonText: "Попробовать еще раз") { [weak self] in
             guard let self else { return }
             
-            self.currentQuestionIndex = 0
+            self.presenter.resetQuestionIndex()
             self.correctAnswersCount = 0
             
             self.questionFactory?.requestNextQuestion()
@@ -129,11 +129,11 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate {
     private func showNextQuestionOrResults() {
         isAnswerBeingProcessed = false
         
-        if currentQuestionIndex == questionsAmount - 1 {
-            statisticService.store(correct: correctAnswersCount, total: questionsAmount)
+        if self.presenter.isLastQuestion() {
+            statisticService.store(correct: correctAnswersCount, total: presenter.questionsAmount)
             
             let resultText = """
-            Ваш результат: \(correctAnswersCount)/\(questionsAmount)
+            Ваш результат: \(correctAnswersCount)/\(presenter.questionsAmount)
             Количество сыгранных квизов: \(statisticService.gamesCount)
             Рекорд: \(statisticService.bestGame.correct)/\(statisticService.bestGame.total) (\(statisticService.bestGame.date.dateTimeString))
             Средняя точность: \(String(format: "%.2f", statisticService.totalAccuracy))%
@@ -149,7 +149,7 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate {
         } else {
             self.imageView.layer.borderWidth = 0
             self.imageView.layer.borderColor = nil
-            currentQuestionIndex += 1
+            self.presenter.switchToNextQuestion()
             
             self.questionFactory?.requestNextQuestion()
         }
@@ -165,7 +165,7 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate {
     
     // MARK: - Game Restart
     private func restartGame() {
-        currentQuestionIndex = 0
+        self.presenter.resetQuestionIndex()
         correctAnswersCount = 0
         imageView.layer.borderWidth = 0
         imageView.layer.borderColor = nil
