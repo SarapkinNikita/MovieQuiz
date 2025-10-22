@@ -27,22 +27,20 @@ final class MovieQuizPresenter {
     }
     
     func yesButtonClicked() {
+            didAnswer(isYes: true)
+        }
+        
+        func noButtonClicked() {
+            didAnswer(isYes: false)
+        }
+        
+        private func didAnswer(isYes: Bool) {
             guard let currentQuestion = currentQuestion else {
                 return
             }
             
-            let givenAnswer = true
+            let givenAnswer = isYes
             
             viewController?.showAnswerResult(isCorrect: givenAnswer == currentQuestion.correctAnswer)
         }
-    
-    func noButtonClicked() {
-            guard let currentQuestion = currentQuestion else {
-                return
-            }
-            
-            let givenAnswer = false
-            
-            viewController?.showAnswerResult(isCorrect: givenAnswer == currentQuestion.correctAnswer)
-        }
-}
+    } 
