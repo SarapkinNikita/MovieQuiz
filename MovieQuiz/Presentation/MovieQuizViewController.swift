@@ -36,25 +36,25 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate {
     
     // MARK: - QuestionFactoryDelegate
     func didReceiveNextQuestion(question: QuizQuestion?) {
-        guard let question = question else {
-            return
-        }
-        
-        currentQuestion = question
-        let viewModel = presenter.convert(model: question)
-        DispatchQueue.main.async { [weak self] in
-            self?.show(quiz: viewModel)
-        }
+        presenter.didReceiveNextQuestion(question: question)
     }
+//    func didReceiveNextQuestion(question: QuizQuestion?) {
+//        guard let question = question else {
+//            return
+//        }
+//
+//        currentQuestion = question
+//        let viewModel = presenter.convert(model: question)
+//        DispatchQueue.main.async { [weak self] in
+//            self?.show(quiz: viewModel)
+//        }
+//    }
     // MARK: - IB Actions
-    
     @IBAction private func yesButtonClicked(_ sender: UIButton) {
-            presenter.currentQuestion = currentQuestion
             presenter.yesButtonClicked()
         }
-    
-    @IBAction private func noButtonClicked(_ sender: UIButton) {
-            presenter.currentQuestion = currentQuestion
+        
+        @IBAction private func noButtonClicked(_ sender: UIButton) {
             presenter.noButtonClicked()
         }
     
@@ -82,7 +82,7 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate {
 //            questionNumber: "\(currentQuestionIndex + 1)/\(questionsAmount)")
 //    }
     
-    private func show(quiz step: QuizStep) {
+    func show(quiz step: QuizStep) {
         imageView.image = step.image
         questionLabel.text = step.question
         counterLabel.text = step.questionNumber
