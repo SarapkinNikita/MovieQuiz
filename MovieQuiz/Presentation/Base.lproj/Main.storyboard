@@ -142,7 +142,9 @@
                         <outlet property="activityIndicator" destination="eYm-Gf-xX0" id="cGP-5g-1h0"/>
                         <outlet property="counterLabel" destination="RPG-TC-91S" id="5HN-FL-ud7"/>
                         <outlet property="imageView" destination="mEx-kg-SaT" id="jVX-Zg-BVR"/>
+                        <outlet property="noButton" destination="5Lg-eC-0GU" id="NuZ-qG-lbU"/>
                         <outlet property="questionLabel" destination="tCk-7D-B0h" id="RxX-go-j8b"/>
+                        <outlet property="yesButton" destination="44N-li-NQb" id="dHb-Y0-g4L"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="dkx-z0-nzr" sceneMemberID="firstResponder"/>
