@@ -25,10 +25,11 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-       imageView.layer.cornerRadius = 20
+        presenter.viewController = self
+        imageView.layer.cornerRadius = 20
         questionFactory = QuestionFactory(moviesLoader: MoviesLoader(), delegate: self)
         statisticService = StatisticService()
-
+        
         showLoadingIndicator()
         questionFactory?.loadData()
     }
@@ -46,21 +47,32 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate {
         }
     }
     // MARK: - IB Actions
-    @IBAction private func yesButtonClicked(_ sender: Any) {
-        handleAnswer(givenAnswer: true)
-    }
     
-    @IBAction private func noButtonClicked(_ sender: Any) {
-        handleAnswer(givenAnswer: false)
-    }
+    @IBAction private func yesButtonClicked(_ sender: UIButton) {
+            presenter.currentQuestion = currentQuestion
+            presenter.yesButtonClicked()
+        }
     
-    private func handleAnswer(givenAnswer: Bool) {
-        guard !isAnswerBeingProcessed else { return }
-        isAnswerBeingProcessed = true
-        
-        guard let currentQuestion = currentQuestion else { return }
-        showAnswerResult(isCorrect: givenAnswer == currentQuestion.correctAnswer)
-    }
+    @IBAction private func noButtonClicked(_ sender: UIButton) {
+            presenter.currentQuestion = currentQuestion
+            presenter.noButtonClicked()
+        }
+    
+//    @IBAction private func yesButtonClicked(_ sender: Any) {
+//        handleAnswer(givenAnswer: true)
+//    }
+//
+//    @IBAction private func noButtonClicked(_ sender: Any) {
+//        handleAnswer(givenAnswer: false)
+//    }
+//
+//    private func handleAnswer(givenAnswer: Bool) {
+//        guard !isAnswerBeingProcessed else { return }
+//        isAnswerBeingProcessed = true
+//
+//        guard let currentQuestion = currentQuestion else { return }
+//        showAnswerResult(isCorrect: givenAnswer == currentQuestion.correctAnswer)
+//    }
     
     // MARK: - Private Methods
 //    private func convert(model: QuizQuestion) -> QuizStep {
@@ -112,7 +124,7 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate {
         showNetworkError(message: error.localizedDescription)
     }
     
-    private func showAnswerResult(isCorrect: Bool) {
+    func showAnswerResult(isCorrect: Bool) {
         if isCorrect {
             correctAnswersCount += 1
         }
