@@ -1,20 +1,34 @@
 import UIKit
 
-final class MovieQuizPresenter: QuestionFactoryDelegate {
+protocol MovieQuizViewControllerProtocol: AnyObject {
+    func show(quiz step: QuizStep)
+    func show(quiz result: QuizResults)
     
+    func highlightImageBorder(isCorrectAnswer: Bool)
+    
+    func showLoadingIndicator()
+    func hideLoadingIndicator()
+    
+    func showNetworkError(message: String)
+    func setButtonsEnabled(_ isEnabled: Bool)
+}
+
+final class MovieQuizPresenter: QuestionFactoryDelegate {
+
     let questionsAmount: Int = 10
     var correctAnswers: Int = 0
     var currentQuestion: QuizQuestion?
     private var currentQuestionIndex: Int = 0
     private var questionFactory: QuestionFactoryProtocol?
-    private weak var viewController: MovieQuizViewController?
     private let statisticService: StatisticServiceProtocol!
     
-    init(viewController: MovieQuizViewController) {
+    // используем протокол
+    private weak var viewController: MovieQuizViewControllerProtocol?
+
+    init(viewController: MovieQuizViewControllerProtocol) {
         self.viewController = viewController
-        
+
         statisticService = StatisticService()
-        
         questionFactory = QuestionFactory(moviesLoader: MoviesLoader(), delegate: self)
         questionFactory?.loadData()
         viewController.showLoadingIndicator()
@@ -83,7 +97,7 @@ final class MovieQuizPresenter: QuestionFactoryDelegate {
                 title: "Этот раунд окончен!",
                 text: text,
                 buttonText: "Сыграть ещё раз")
-            viewController?.showResults(quiz: viewModel)
+            viewController?.show(quiz: viewModel)
         } else {
             self.switchToNextQuestion()
             questionFactory?.requestNextQuestion()

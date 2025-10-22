@@ -2,7 +2,7 @@ import UIKit
 
 // MARK: - MovieQuizViewController
 
-final class MovieQuizViewController: UIViewController {
+final class MovieQuizViewController: UIViewController, MovieQuizViewControllerProtocol {
     
     // MARK: - IB Outlets
     @IBOutlet private weak var imageView: UIImageView!
@@ -23,7 +23,6 @@ final class MovieQuizViewController: UIViewController {
         
         presenter = MovieQuizPresenter(viewController: self)
         imageView.layer.cornerRadius = 20
-        //       statisticService = StatisticService()
         
         showLoadingIndicator()
     }
@@ -84,7 +83,7 @@ final class MovieQuizViewController: UIViewController {
         imageView.layer.borderColor = isCorrectAnswer ? UIColor.ypGreenIOS.cgColor : UIColor.ypRedIOS.cgColor
     }
     
-    func showResults(quiz result: QuizResults) {
+    func show(quiz result: QuizResults) {
         let message = presenter.makeResultsMessage()
         
         let alert = UIAlertController(
