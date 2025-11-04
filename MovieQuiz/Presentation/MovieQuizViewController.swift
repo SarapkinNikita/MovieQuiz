@@ -17,13 +17,17 @@ final class MovieQuizViewController: UIViewController, MovieQuizViewControllerPr
     private var alertPresenter = AlertPresenter()
     private var presenter: MovieQuizPresenter!
     
+    // MARK: - UI Constants
+    private enum UIConstants {
+        static let imageCornerRadius: CGFloat = 20
+    }
+    
     // MARK: - View Life Cycle
     override func viewDidLoad() {
         super.viewDidLoad()
         
         presenter = MovieQuizPresenter(viewController: self)
-        imageView.layer.cornerRadius = 20
-        
+        imageView.layer.cornerRadius = UIConstants.imageCornerRadius
         showLoadingIndicator()
     }
     

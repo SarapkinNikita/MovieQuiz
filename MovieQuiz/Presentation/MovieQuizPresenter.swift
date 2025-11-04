@@ -20,18 +20,18 @@ final class MovieQuizPresenter: QuestionFactoryDelegate {
     var currentQuestion: QuizQuestion?
     private var currentQuestionIndex: Int = 0
     private var questionFactory: QuestionFactoryProtocol?
-    private let statisticService: StatisticServiceProtocol!
+    private let statisticService: StatisticServiceProtocol
     
     // используем протокол
     private weak var viewController: MovieQuizViewControllerProtocol?
 
     init(viewController: MovieQuizViewControllerProtocol) {
         self.viewController = viewController
-
-        statisticService = StatisticService()
-        questionFactory = QuestionFactory(moviesLoader: MoviesLoader(), delegate: self)
-        questionFactory?.loadData()
+        self.statisticService = StatisticService()
+        self.questionFactory = QuestionFactory(moviesLoader: MoviesLoader(), delegate: self)
+        
         viewController.showLoadingIndicator()
+        questionFactory?.loadData()
     }
     
     func isLastQuestion() -> Bool {
@@ -68,9 +68,7 @@ final class MovieQuizPresenter: QuestionFactoryDelegate {
     }
     
     private func didAnswer(isYes: Bool) {
-        guard let currentQuestion = currentQuestion else {
-            return
-        }
+        guard let currentQuestion else { return }
         
         let givenAnswer = isYes
         
@@ -90,16 +88,17 @@ final class MovieQuizPresenter: QuestionFactoryDelegate {
     }
     
     func proceedToNextQuestionOrResults() {
-        if self.isLastQuestion() {
+        if isLastQuestion() {
             let text = "Вы ответили на \(correctAnswers) из 10, попробуйте ещё раз!"
             
             let viewModel = QuizResults(
-                title: "Этот раунд окончен!",
+                title: .roundFinishedTitle,
                 text: text,
-                buttonText: "Сыграть ещё раз")
+                buttonText: .playAgain
+            )
             viewController?.show(quiz: viewModel)
         } else {
-            self.switchToNextQuestion()
+            switchToNextQuestion()
             questionFactory?.requestNextQuestion()
         }
     }
@@ -150,4 +149,9 @@ final class MovieQuizPresenter: QuestionFactoryDelegate {
             self.proceedToNextQuestionOrResults()
         }
     }
+}
+
+private extension String {
+    static let roundFinishedTitle = "Этот раунд окончен!"
+    static let playAgain = "Сыграть ещё раз"
 }
